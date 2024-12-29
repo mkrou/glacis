@@ -1,0 +1,120 @@
+[
+  {
+    "airport": {
+      "pluginData": {
+        "schedule": {
+          "arrivals": {
+            "data": [
+              {
+                "flight": {
+                  "airport": {
+                    "origin": {
+                      "code": {
+                        "iata": "TRZ",
+                        "icao": "VOTR"
+                      },
+                      "timezone": {
+                        "name": "Asia/Kolkata",
+                        "offset": 19800,
+                        "abbr": "IST",
+                        "abbrName": "India Standard Time",
+                        "isDst": false
+                      },
+                      "info": {
+                        "terminal": null,
+                        "baggage": null,
+                        "gate": null
+                      },
+                      "name": "Tiruchirappalli International Airport",
+                      "position": {
+                        "latitude": 10.76536,
+                        "longitude": 78.709717,
+                        "country": {
+                          "name": "India",
+                          "code": "IN",
+                          "id": 102
+                        },
+                        "region": {
+                          "city": "Tiruchirapalli"
+                        }
+                      },
+                      "visible": true
+                    },
+                    "destination": {
+                      "timezone": {
+                        "name": "Asia/Singapore",
+                        "offset": 28800,
+                        "abbr": "+08",
+                        "abbrName": null,
+                        "isDst": false
+                      },
+                      "info": {
+                        "terminal": "2",
+                        "baggage": "32",
+                        "gate": "T2"
+                      }
+                    },
+                    "real": null
+                  }
+                }
+              },
+              {
+                "flight": {
+                  "airport": {
+                    "origin": {
+                      "code": {
+                        "iata": "HKT",
+                        "icao": "VTSP"
+                      },
+                      "timezone": {
+                        "name": "Asia/Bangkok",
+                        "offset": 25200,
+                        "abbr": "+07",
+                        "abbrName": null,
+                        "isDst": false
+                      },
+                      "info": {
+                        "terminal": "I",
+                        "baggage": null,
+                        "gate": null
+                      },
+                      "name": "Phuket International Airport",
+                      "position": {
+                        "latitude": 8.1132,
+                        "longitude": 98.316872,
+                        "country": {
+                          "name": "Thailand",
+                          "code": "TH",
+                          "id": 221
+                        },
+                        "region": {
+                          "city": "Phuket"
+                        }
+                      },
+                      "visible": true
+                    },
+                    "destination": {
+                      "timezone": {
+                        "name": "Asia/Singapore",
+                        "offset": 28800,
+                        "abbr": "+08",
+                        "abbrName": null,
+                        "isDst": false
+                      },
+                      "info": {
+                        "terminal": "1",
+                        "baggage": "14",
+                        "gate": "C17"
+                      }
+                    },
+                    "real": null
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+]

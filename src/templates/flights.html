@@ -1,0 +1,16 @@
+<table>
+    <thead>
+    <tr>
+        <th scope="col">Country</th>
+        <th scope="col"># of flights</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for country, count in countries %}
+    <tr>
+        <th scope="row">{{ country }}</th>
+        <td>{{ count }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>

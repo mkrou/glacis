@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Flights by Country</title>
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.colors.min.css">
+</head>
+<body>
+
+<main class="container">
+    <header class="container" style="display: flex; align-items: center; justify-content: space-between;">
+        <h1>Flights by Country</h1>
+        <span id="spinner" aria-busy="true" class="htmx-indicator">Getting airport schedule...</span>
+    </header>
+    <form hx-post="/flights" hx-target="#results" hx-swap="innerHTML"
+          hx-disabled-elt="find input[type='text'], find button" hx-indicator="#spinner">
+        <fieldset role="group">
+            <input type="text" name="airport_code" placeholder="Please enter a 3-character airport code" minlength="3"
+                   maxlength="3" required/>
+            <button type="submit">Get</button>
+        </fieldset>
+    </form>
+    <div id="results"></div>
+</main>
+</body>
+</html>
