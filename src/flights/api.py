@@ -75,33 +75,3 @@ class FlightAPI:
                 message="An unexpected error occurred",
                 details=e.__class__.__name__ + str(e)
             ) from e
-
-
-class CachedFlightAPI(FlightAPI):
-    """
-    A version of FlightAPI that caches results in memory.
-    """
-
-    def __init__(self, token: str):
-        """
-        Initializes the SDK with the provided token and an empty cache.
-
-        :param token: API authentication token.
-        """
-        super().__init__(token)
-        self._cache: dict[str, list[str]] = {}
-
-    async def get_today_arrivals_countries(self, airport_code: str) -> list[str]:
-        """
-        Fetches the flight schedule with caching.
-
-        :param airport_code: Airport IATA code.
-        :return: List of origin countries for today's arrivals.
-        """
-
-        if airport_code in self._cache:
-            return self._cache[airport_code]
-
-        countries = await super().get_today_arrivals_countries(airport_code)
-        self._cache[airport_code] = countries
-        return countries
