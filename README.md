@@ -26,7 +26,7 @@ A live demo of the project is available at [https://glacis.fly.dev/](https://gla
 3. Create a `.env` file and add your API token:
 
    ```plaintext
-   FLIGHT_API_TOKEN=your_token
+   OPENAI_API_KEY=your_token
    ```
 
 ## Running the Application
@@ -46,3 +46,4 @@ The application will be available at `http://localhost:8000`.
 - **Pydantic**: for data validation.
 - **htmx**: for handling dynamic HTML interactions.
 - **Pico CSS**: for styling the web interface.
+- **PandasAI**: for generating answers to questions about flight data.

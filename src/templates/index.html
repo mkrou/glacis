@@ -12,13 +12,18 @@
 <main class="container">
     <header class="container" style="display: flex; align-items: center; justify-content: space-between;">
         <h1>Flights by Country</h1>
-        <span id="spinner" aria-busy="true" class="htmx-indicator">Getting airport schedule...</span>
+        <span id="spinner" aria-busy="true" class="htmx-indicator">Thinking on your question...</span>
     </header>
     <form hx-post="/flights" hx-target="#results" hx-swap="innerHTML"
           hx-disabled-elt="find input[type='text'], find button" hx-indicator="#spinner">
         <fieldset role="group">
-            <input type="text" name="airport_code" placeholder="Please enter a 3-character airport code" minlength="3"
-                   maxlength="3" required/>
+            <select name="airport_code" required>
+                {% for airport in airports %}
+                    <option value="{{ airport }}">{{ airport }}</option>
+                {% endfor %}
+            </select>
+            <input type="text" name="question" placeholder="Please enter your question" minlength="5"
+                   maxlength="300" required/>
             <button type="submit">Get</button>
         </fieldset>
     </form>
