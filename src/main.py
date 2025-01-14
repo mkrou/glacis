@@ -1,3 +1,4 @@
+import json
 import re
 from contextlib import asynccontextmanager
 from typing import Annotated
@@ -11,8 +12,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.inmemory import InMemoryBackend
-from pandasai import SmartDataframe
-from pandasai.llm import OpenAI
+from openai import AsyncOpenAI
 from pydantic import BaseModel, field_validator
 
 from config import settings
@@ -27,7 +27,7 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
 
 app = FastAPI(lifespan=lifespan)
 templates = Jinja2Templates(directory="src/templates")
-llm = OpenAI(api_token=settings.openai_api_key)
+client = AsyncOpenAI(api_key=settings.openai_api_key)
 flight_data_df = pd.read_json('assets/flight_data.json')
 
 
@@ -66,23 +66,94 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     return templates.TemplateResponse("error.html", {"request": request, "error_message": error_message})
 
 
+tools = [{
+    "type": "function",
+    "function": {
+        "name": "query_flights",
+        "description": """
+        Query flights to a specific airport. 
+        
+        """,
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "string",
+                    "description": """The correct pandas text query to filter the flight data. Available fields: 
+        - destination_airport = 3-letter airport code
+        - src_airline_code = 2-letter airline code
+        - src_country = country full name in English
+        - src_city = city full name in English
+        - src_identification_codeshare = codeshare code
+        - flight_number = flight number
+        - Arrived Late = boolean
+        - Estimated Late = boolean"""},
+            },
+            "required": ["query"],
+            "additionalProperties": False
+        },
+        "strict": True
+    }
+}]
+
+
+def query_flights(airport_code: str, query: str) -> pd.DataFrame:
+    """
+    Query the flight data for flights to a specific airport and further filter based on a text query.
+
+    :param airport_code: The destination airport code to filter by.
+    :param query: The text query to further filter the flight data.
+    :return: A DataFrame containing the filtered flight data.
+    """
+    logger.info(f"Querying flights for {airport_code} with query: {query}")
+    filtered_df = flight_data_df[flight_data_df['destination_airport'] == airport_code]
+    filtered_df = filtered_df.query(query)
+    return filtered_df
+
+
 @app.post("/flights", response_class=HTMLResponse)
 async def fetch_flights(request: Request, flight_request: Annotated[FlightRequest, Form()]):
     try:
-        flight_data_subset_df = flight_data_df[flight_data_df['destination_airport'] == flight_request.airport_code]
-
-        smart_flight_data_df = SmartDataframe(flight_data_subset_df, config={"llm": llm})
-
         prompt = f"""
         You are an expert in flight data. 
         Always answer in the same language as the question. 
-        You are answering only on questions about flights to {flight_request.airport_code} airport.
+        You are answering only on questions about flights to selected {flight_request.airport_code} airport.
+        If the question is not about flights to {flight_request.airport_code} airport, ask to choose another airport.
+        Build just one query to filter the flight data based on the question.
         Question: {flight_request.question}
         """
 
+        messages = [
+            {"role": "system", "content": prompt},
+            {"role": "user", "content": flight_request.question}
+        ]
+
+        completion = await client.chat.completions.create(
+            model="gpt-4o",
+            messages=messages,
+            tools=tools
+        )
+
+        if completion.choices[0].message.tool_calls:
+            tool_call = completion.choices[0].message.tool_calls[0]
+            args = json.loads(tool_call.function.arguments)
+            data = query_flights(flight_request.airport_code, args["query"])
+            messages.append(completion.choices[0].message)
+            messages.append({
+                "role": "tool",
+                "tool_call_id": tool_call.id,
+                "content": data.to_string()
+            })
+
+            completion = await client.chat.completions.create(
+                model="gpt-4o",
+                messages=messages,
+                tools=tools,
+            )
+
         return templates.TemplateResponse("flights.html", {
             "request": request,
-            "response": smart_flight_data_df.chat(prompt, output_type="string")
+            "response": completion.choices[0].message.content
         })
 
     except Exception as e:
