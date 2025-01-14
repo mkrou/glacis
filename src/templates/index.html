@@ -17,14 +17,14 @@
     <form hx-post="/flights" hx-target="#results" hx-swap="innerHTML"
           hx-disabled-elt="find input[type='text'], find button" hx-indicator="#spinner">
         <fieldset role="group">
-            <select name="airport_code" required>
+            <select name="airport_code" required style="width: 150px;">
                 {% for airport in airports %}
                     <option value="{{ airport }}">{{ airport }}</option>
                 {% endfor %}
             </select>
             <input type="text" name="question" placeholder="Please enter your question" minlength="5"
                    maxlength="300" required/>
-            <button type="submit">Get</button>
+            <button type="submit">Ask</button>
         </fieldset>
     </form>
     <div id="results"></div>
